@@ -7,7 +7,7 @@ listen(...args) {
   // 利用 debug 包监听 listen 过程中的信息
   debug('listen');
 
-  // 创建 http 实例服务，此时可看出 this.callback() 应返回一个带 req 与 res 的函数
+  // 创建 http 实例服务，此时可看出 this.callback() 应返回一个带 req 与 res 作为参数的函数
   // 此时 server 即返回新建的 http.Server 实例
   const server = http.createServer(this.callback())
 
@@ -24,6 +24,7 @@ callback() {
   // 监听整个 app 的 error 事件，继承于 eventsEmitter 后的用法
   if (!this.listenerCount('error')) this.on('error', this.onerror);
 
+  // 返回 createServer 参数中所需的回调函数
   const handleRequest = (req, res) => {
     const ctx = this.createContext(req, res);
     return this.handleRequest(ctx, fn);
@@ -32,7 +33,7 @@ callback() {
   return handleRequest;
 }
 ```
-我们在 koa 中使用中间件都是直接使用实例 api use 的，所以我们如果想知道中间件设计模式的原理，首先必须要知道 use 做了什么
+在讲解 compose 之前，我们知道在 koa 中使用中间件都是直接使用实例 api use 的，如果想知道中间件设计模式的原理，首先必须要知道 use 做了什么
 ```
 use(fn) {
   // 两项校验很简单，一是校验引入的中间件一定要为函数，二是校验中间件函数是否使用了 generator，此特性在 V3 版本会被全面替换为 async await 希望读者可以自己替换
