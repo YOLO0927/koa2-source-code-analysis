@@ -2,7 +2,7 @@
 首先大家要看到通过 CMD 规范释出的类 Application 是继承于 Emitter 类的，这个 Emitter 类即是 Node 的 events 模块，直接使 Application 类变为异步事件驱动架构，比如 http 模块的 server 类。后续在代码中会有所体现，写过任何前端组件的同学都应该看看文档就懂了。
 
 接下来我们直接从 listen 函数切入
-```
+```js
 listen(...args) {
   // 利用 debug 包监听 listen 过程中的信息
   debug('listen');
@@ -16,7 +16,7 @@ listen(...args) {
 }
 ```
 线索跳至 this.callback()，在 demo 中即 app.callback()
-```
+```js
 callback() {
   // 使用 koa-compose 将所有中间件集成返回为一个中间件函数，此时 fn 是一个闭包，我们在下面会解释 koa-compose 源码，因为这对中间件的顺序执行起到关键性作用，是 koa 整个中间件设计的核心。
   const fn = compose(this.middleware);
@@ -34,7 +34,7 @@ callback() {
 }
 ```
 在讲解 compose 之前，我们知道在 koa 中使用中间件都是直接使用实例 api use 的，如果想知道中间件设计模式的原理，首先必须要知道 use 做了什么
-```
+```js
 use(fn) {
   // 两项校验很简单，一是校验引入的中间件一定要为函数，二是校验中间件函数是否使用了 generator，此特性在 V3 版本会被全面替换为 async await 希望读者可以自己替换
   if (typeof fn !== 'function') throw new TypeError('middleware must be a function!');
@@ -53,7 +53,7 @@ use(fn) {
 ```
 现在我们知道了原来一直 use 就是将自己引入的中间件入栈保存，那么它会在哪执行呢？现在我们回到 this.callback 中的 `const fn = compose(this.middleware)` 去先分析 koa-compose 的源码，就会非常清楚了，以下为解析
 
-```
+```js
 function compose (middleware) {
   // 判断参数必须为数组
   if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
@@ -102,7 +102,7 @@ OK，现在我们已经知道 koa 设计模式的整个中间件体系是怎么�
 其次是 `return this.handleRequest(ctx, fn)`，看吧这里立刻就传入了！
 
 需要注意其中 createContext 函数参数 req 与 res 即是在 listen 函数中 createServer(this.callback()) 时注入的，不知道的童鞋请自行查看 node 文档中的 http.createServer
-```
+```js
 createContext(req, res) {
   // 将过滤的 context.js 赋值
   const context = Object.create(this.context);
@@ -127,7 +127,7 @@ createContext(req, res) {
   return context;
 }
 ```
-```
+```js
 handleRequest(ctx, fnMiddleware) {
   // 取出响应类
   const res = ctx.res;

@@ -1,7 +1,7 @@
 ### request.js(koa 的 ctx.req) => 封装于 http.IncomingMessage 类（即新建服务时回调内的 request）
 
 首先我们要先清楚 request.js 中的 this.req 即为 application.js 内的 request.req，在 callback 函数中最终赋值给了 ctx.req => request.js 中的 this.req =>
-```
+```js
 const request = context.request = Object.create(this.request)
 context.req = request.req = response.req = req
 ```

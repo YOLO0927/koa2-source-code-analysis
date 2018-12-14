@@ -7,9 +7,9 @@
 `ctx.assert` 引入的断言工具，让你可以像 ctx.throw 一样，断言指定变量而返回你定义的 statusCode 与 errMsg，这个自己看看 `htt-assert` 的文档就会用了。
 
 `ctx.onerror` 触发此错误事件时会同时触发 koa 实例中创建服务时默认 callback 中定义的 error 事件做出相应处理。
- 
+
  针对 cookie 定义了访问器用于获取与设定，在 koa 的文档中我们看到需要设定 cookie 所对应的 key 数组，这是 cookies 包定义的
-```
+```js
 get cookies() {
   if (!this[COOKIES]) {
     // 在实例 req 与 res 上定义 cookie 的 key 值，每次获取都会默认创建 cookie 的一个新 key 并为空（在没有 set 的情况下），直接返回 cookies 包实例。
